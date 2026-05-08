@@ -27,7 +27,7 @@ export default function TeamView() {
   }, []);
 
   const teamId = localStorage.getItem('teamId');
-  const team = teamId ? gameState.teams[teamId] : null;
+  const team = teamId && gameState ? gameState.teams[teamId] : null;
 
   if (!team) {
     navigate('/');
@@ -129,7 +129,7 @@ export default function TeamView() {
 
   // Calcul du classement
   const getRanking = () => {
-    return Object.entries(gameState.teams)
+    return Object.entries(gameState?.teams || {})
       .map(([id, team]) => ({ id, ...team }))
       .sort((a, b) => b.score - a.score)
       .map((team, index) => ({ ...team, rank: index + 1 }));
@@ -142,7 +142,7 @@ export default function TeamView() {
   const isRestrictedZone = currentStep?.zone === 'chambre_fille';
 
   // Mode non-linéaire : données des zones
-  const isModeNonLineaire = gameState?.modeNonLineaire;
+  const isModeNonLineaire = gameState?.modeNonLineaire ?? false;
   const teamZones = teamId ? gameState?.zones?.[teamId] : {};
   const zoneStates = gameState?.zoneStates || {};
 
@@ -225,7 +225,7 @@ export default function TeamView() {
         </div>
 
         {/* Message global overlay */}
-        {showGlobalMessage && gameState.messageGlobal && (
+        {showGlobalMessage && gameState?.messageGlobal && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-gray-800 p-8 rounded-lg text-center max-w-md">
               <p className="text-2xl text-white">{gameState.messageGlobal}</p>
@@ -487,7 +487,7 @@ export default function TeamView() {
       )}
 
       {/* Message global overlay */}
-      {showGlobalMessage && gameState.messageGlobal && (
+      {showGlobalMessage && gameState?.messageGlobal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-8 rounded-lg text-center max-w-md">
             <p className="text-2xl text-white">{gameState.messageGlobal}</p>

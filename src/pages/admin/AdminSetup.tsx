@@ -8,30 +8,6 @@ import Toast from '../../components/Toast';
 import type { GameState, Step, ZoneType } from '../../types/game';
 import { generateQuestions, generateTeamCode, generateFinaleCode, DEFAULT_CONFIG, type GeneratorConfig } from '../../utils/questionGenerator';
 
-// Templates d'indices locaux
-const indexTemplates = [
-  {
-    type: 'anagramme',
-    generate: (keyword: string) => `Anagramme : ${keyword.split('').sort(() => Math.random() - 0.5).join('')}`,
-  },
-  {
-    type: 'charade',
-    generate: (keyword: string) => `Charade : Mon premier est "${keyword[0]}", mon tout est "${keyword}"`,
-  },
-  {
-    type: 'devinette',
-    generate: (keyword: string) => `Devinette : Je suis un mot qui commence par "${keyword[0]}" et finit par "${keyword[keyword.length - 1]}"`,
-  },
-  {
-    type: 'jeu_de_mots',
-    generate: (keyword: string) => `Jeu de mots : "${keyword}" mais en plus mystérieux...`,
-  },
-  {
-    type: 'enigme_visuelle',
-    generate: (keyword: string) => `Énigme visuelle : 🎯 ${keyword} 🎯`,
-  },
-];
-
 export default function AdminSetup() {
   const navigate = useNavigate();
   const sendMessage = useGameStore(state => state.sendMessage);
@@ -121,7 +97,7 @@ export default function AdminSetup() {
     setCommonSteps(generated);
     
     // Appliquer à toutes les équipes existantes
-    const newEtapes: { [teamId: string]: Step[] } = {};
+    const newEtapes: { [_teamId: string]: Step[] } = {};
     teams.forEach(team => {
       newEtapes[team.id] = [...generated];
     });
@@ -188,12 +164,6 @@ export default function AdminSetup() {
       newEtapes[team.id] = teamSteps;
     });
     setEtapes(newEtapes);
-  };
-
-  const updateStep = (teamId: string, stepIndex: number, field: string, value: any) => {
-    const teamSteps = etapes[teamId] || [];
-    teamSteps[stepIndex] = { ...teamSteps[stepIndex], [field]: value };
-    setEtapes({ ...etapes, [teamId]: teamSteps });
   };
 
   const editTeamQuestion = (teamId: string, index: number) => {
