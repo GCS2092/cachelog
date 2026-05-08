@@ -77,7 +77,7 @@ export default function AdminSetup() {
     setTeams(teams.map(t => t.id === id ? { ...t, [field]: value } : t));
   };
 
-  const addStep = (teamId: string) => {
+  const addStep = (_teamId: string) => {
     const newStep: Step & { id: string } = { 
       id: Date.now().toString(),
       indice: '', 
