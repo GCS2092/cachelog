@@ -91,6 +91,15 @@ export default function Landing() {
                 Rejoindre l'équipe
               </Button>
             </form>
+
+            <div className="text-center">
+              <button
+                onClick={() => navigate('/admin')}
+                className="text-gray-600 text-xs hover:text-gray-500 transition-colors"
+              >
+                Admin
+              </button>
+            </div>
           </div>
         ) : (
           <div className="text-center space-y-4 sm:space-y-6">
