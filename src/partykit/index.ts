@@ -95,9 +95,59 @@ export default {
         if (!currentState.modeNonLineaire) return; // Ignorer si mode linéaire
 
         const zoneData = currentState.zones[msg.teamId]?.[msg.zone];
-        if (!zoneData) return;
+        const zoneState = currentState.zoneStates[msg.zone];
+        const team = currentState.teams[msg.teamId];
 
-        // Rien à faire, c'est juste pour synchroniser la sélection
+        if (!zoneData || !team) return;
+
+        // Vérifier si la zone est abandonnée par cette équipe
+        if (zoneState?.abandonedByTeams?.includes(msg.teamId)) {
+          return; // Équipe ne peut plus revenir sur cette zone
+        }
+
+        // Vérifier si la zone est déjà occupée par une autre équipe
+        if (zoneState?.lockedByTeam && zoneState.lockedByTeam !== msg.teamId) {
+          return; // Zone déjà occupée
+        }
+
+        // Verrouiller la zone pour cette équipe
+        if (!currentState.zoneStates[msg.zone]) {
+          currentState.zoneStates[msg.zone] = { locked: false, trapActive: false };
+        }
+        currentState.zoneStates[msg.zone].lockedByTeam = msg.teamId;
+
+        await room.storage.put("gameState", currentState);
+        room.broadcast(JSON.stringify({ type: "STATE_UPDATE", gameState: currentState }));
+        break;
+      }
+
+      case "ABANDON_ZONE": {
+        if (!currentState.modeNonLineaire) return;
+
+        const zoneState = currentState.zoneStates[msg.zone];
+        const team = currentState.teams[msg.teamId];
+
+        if (!zoneState || !team) return;
+
+        // Vérifier que cette équipe occupe bien cette zone
+        if (zoneState.lockedByTeam !== msg.teamId) {
+          return;
+        }
+
+        // Pénalité pour abandon (10 points)
+        team.score = Math.max(0, team.score - 10);
+
+        // Libérer la zone
+        zoneState.lockedByTeam = undefined;
+
+        // Marquer la zone comme abandonnée par cette équipe
+        if (!zoneState.abandonedByTeams) {
+          zoneState.abandonedByTeams = [];
+        }
+        if (!zoneState.abandonedByTeams.includes(msg.teamId)) {
+          zoneState.abandonedByTeams.push(msg.teamId);
+        }
+
         await room.storage.put("gameState", currentState);
         room.broadcast(JSON.stringify({ type: "STATE_UPDATE", gameState: currentState }));
         break;
@@ -226,14 +276,14 @@ function getInitialState(): GameState {
     etapes: {},
     zones: {},
     zoneStates: {
-      salon: { locked: false, trapActive: false },
-      cuisine: { locked: false, trapActive: false },
-      chambre_garcon: { locked: false, trapActive: false },
-      chambre_fille: { locked: false, trapActive: false },
-      douche: { locked: false, trapActive: false },
-      etage2: { locked: false, trapActive: false },
-      etage3: { locked: false, trapActive: false },
-      terrasse: { locked: false, trapActive: false },
+      salon: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      cuisine: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      chambre_garcon: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      chambre_fille: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      douche: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      etage2: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      etage3: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
+      terrasse: { locked: false, trapActive: false, lockedByTeam: undefined, abandonedByTeams: [] },
     },
     finale: { indice: "", code: "" },
     connectedTeams: {},

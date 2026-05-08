@@ -31,6 +31,14 @@ export interface Finale {
   code: string;
 }
 
+export interface ZoneState {
+  locked: boolean;
+  lockedUntil?: number;
+  trapActive: boolean;
+  lockedByTeam?: string; // ID de l'équipe qui occupe la zone
+  abandonedByTeams?: string[]; // ID des équipes qui ont abandonné cette zone
+}
+
 export interface GameState {
   status: GameStatus;
   timerStart: number;        // timestamp ms
@@ -63,11 +71,7 @@ export interface GameState {
 
   // État des zones (pour événements dynamiques)
   zoneStates: {
-    [zone: string]: {
-      locked: boolean;
-      trapActive: boolean;
-      lockedUntil?: number; // timestamp
-    };
+    [zone: string]: ZoneState;
   };
 
   finale: Finale;
@@ -82,6 +86,7 @@ export type WSMessage =
   | { type: "USE_HINT"; teamId: string; etape: number }
   | { type: "VALIDATE_ZONE_CODE"; teamId: string; zone: string; code: string }
   | { type: "SELECT_ZONE"; teamId: string; zone: string }
+  | { type: "ABANDON_ZONE"; teamId: string; zone: string }
   | { type: "UNLOCK_FINALE" }
   | { type: "FINALE_WIN"; teamId: string }
   | { type: "ADMIN_ACTION"; action: "skip_step" | "add_points" | "remove_points" | "reset_team"; teamId: string; value?: number }

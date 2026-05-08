@@ -165,10 +165,21 @@ export default function TeamView() {
     const zoneState = zoneStates?.[zone];
     
     if (zoneState?.locked) return 'locked';
+    if (zoneState?.lockedByTeam && zoneState.lockedByTeam !== teamId) return 'occupied';
+    if (zoneState?.abandonedByTeams?.includes(teamId)) return 'abandoned';
     if (zoneData?.completed) return 'completed';
     if (selectedZone === zone) return 'selected';
     if (zoneData && zoneData.steps.length > 0) return 'available';
     return 'empty';
+  };
+
+  const handleAbandonZone = () => {
+    if (!teamId || !selectedZone) return;
+
+    if (confirm('Êtes-vous sûr de vouloir abandonner cette zone ? Vous perdrez 10 points et ne pourrez plus revenir.')) {
+      sendMessage({ type: 'ABANDON_ZONE', teamId, zone: selectedZone });
+      setSelectedZone(null);
+    }
   };
 
   const handleZoneSelect = (zone: string) => {
@@ -274,26 +285,30 @@ export default function TeamView() {
                   const zoneData = teamZones?.[zone];
                   const currentStepIndex = zoneData?.currentStepIndex || 0;
                   const totalZoneSteps = zoneData?.steps.length || 0;
-                  
+
                   return (
-                    <button
-                      key={zone}
-                      onClick={() => handleZoneSelect(zone)}
-                      disabled={status === 'locked' || status === 'empty' || status === 'completed'}
-                      className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${
-                        status === 'locked' 
-                          ? 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed' 
-                        : status === 'completed'
-                          ? 'bg-green-900 border-green-700'
-                        : status === 'selected'
-                          ? 'bg-purple-600 border-purple-400'
-                        : status === 'available'
-                          ? 'bg-gray-800 border-gray-600 hover:bg-gray-700'
-                        : 'bg-gray-900 border-gray-800 cursor-not-allowed'
-                      }`}
-                    >
-                      <div className="text-2xl sm:text-3xl mb-1">{getZoneIcon(zone)}</div>
-                      <div className="text-xs sm:text-sm font-semibold capitalize">{zone}</div>
+                    <div key={zone} className="flex flex-col items-center">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">{getZoneIcon(zone)}</span>
+                        <span className="text-xs sm:text-sm font-semibold capitalize">{zone}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => handleZoneSelect(zone)}
+                          disabled={status === 'locked' || status === 'empty' || status === 'completed' || status === 'occupied' || status === 'abandoned'}
+                          variant={status === 'selected' ? 'primary' : 'secondary'}
+                          size="sm"
+                          className="text-xs px-2 py-1"
+                        >
+                          {status === 'selected' ? 'En cours' : status === 'occupied' ? 'Occupée' : status === 'abandoned' ? 'Abandonnée' : 'Sélectionner'}
+                        </Button>
+                      </div>
+                      {status === 'occupied' && (
+                        <div className="text-xs text-orange-400 mt-1">🚫 Occupée par une autre équipe</div>
+                      )}
+                      {status === 'abandoned' && (
+                        <div className="text-xs text-red-400 mt-1">❌ Vous avez abandonné</div>
+                      )}
                       {status === 'locked' && (
                         <div className="text-xs text-red-400 mt-1">🔒 Bloquée</div>
                       )}
@@ -306,7 +321,7 @@ export default function TeamView() {
                       {status === 'selected' && (
                         <div className="text-xs text-white mt-1">En cours</div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -317,10 +332,10 @@ export default function TeamView() {
                   <div className="flex justify-between items-center mb-3">
                     <h3 className="font-semibold text-lg capitalize">{selectedZone}</h3>
                     <button
-                      onClick={() => setSelectedZone(null)}
-                      className="text-gray-400 hover:text-white"
+                      onClick={handleAbandonZone}
+                      className="text-red-400 hover:text-red-300 text-sm"
                     >
-                      ✕
+                      Abandonner (-10 pts)
                     </button>
                   </div>
                   
