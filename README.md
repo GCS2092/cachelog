@@ -1,8 +1,8 @@
-# Jeu de Soirée
+# Jeu de Piste - CacheLog
 
-Jeu interactif en temps réel pour vos soirées avec React, Vite, TypeScript, PartyKit et Tailwind CSS.
+Application React + Vite + TypeScript avec PartyKit pour un jeu de piste en temps réel.
 
-## Stack Technique
+## Configuration locale
 
 - **React + Vite + TypeScript** — Frontend
 - **Tailwind CSS** — Style
@@ -31,7 +31,8 @@ Créez un fichier `.env.local` :
 ```env
 VITE_PARTYKIT_HOST=localhost:1999
 ```
-
+PARTYKIT_PROJECT_NAME = cachelog
+VITE_PARTYKIT_URL = https://jeu-soiree.gcs2092.partykit.dev
 ### Lancer PartyKit (backend)
 
 **Option 1 : Déploiement PartyKit (local)**
