@@ -23,7 +23,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
 
     const socket = new PartySocket({
-      host: import.meta.env.VITE_PARTYKIT_HOST || 'localhost:1999',
+      host: import.meta.env.VITE_PARTYKIT_URL || import.meta.env.VITE_PARTYKIT_HOST || 'localhost:1999',
       room: roomName,
     });
 
