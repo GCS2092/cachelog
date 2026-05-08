@@ -1,0 +1,25 @@
+{
+  "name": "Jeu de soirée",
+  "short_name": "Jeu",
+  "description": "Jeu interactif en temps réel pour vos soirées",
+  "theme_color": "#7c3aed",
+  "background_color": "#111827",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

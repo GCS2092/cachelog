@@ -1,0 +1,5 @@
+{
+  "$schema": "https://partykit.io/schema.json",
+  "name": "jeu-soiree",
+  "main": "src/partykit"
+}
