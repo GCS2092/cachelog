@@ -450,32 +450,54 @@ export default function AdminDashboard() {
                   {gameState.modeNonLineaire && gameState.zones[teamId] && (
                     <div className="mb-2 sm:mb-3 p-2 bg-gray-700 rounded text-xs">
                       <p className="text-gray-400 mb-2">🏠 Progression par zone:</p>
-                      <div className="grid grid-cols-2 gap-1">
-                        {['salon', 'cuisine', 'chambre_garcon', 'chambre_fille', 'douche', 'etage2', 'etage3', 'terrasse'].map(zone => {
-                          const zoneData = gameState.zones[teamId]?.[zone];
-                          const zoneState = gameState.zoneStates?.[zone];
-                          const isLocked = zoneState?.locked;
-                          const isCompleted = zoneData?.completed;
-                          const currentStep = zoneData?.currentStepIndex || 0;
-                          const totalSteps = zoneData?.steps.length || 0;
+                      {/* Mode non-linéaire : progression par zone */}
+                      {gameState.modeNonLineaire && (
+                        <div className="mt-3 space-y-2">
+                          {Object.entries(gameState.zones[teamId] || {}).map(([zone, data]) => {
+                            const zoneState = gameState.zoneStates[zone];
+                            const occupiedBy = zoneState?.lockedByTeam;
+                            const isAbandoned = zoneState?.abandonedByTeams?.includes(teamId);
 
-                          return (
-                            <div
-                              key={zone}
-                              className={`flex items-center gap-1 p-1 rounded ${
-                                isLocked ? 'bg-red-900 opacity-50' :
-                                isCompleted ? 'bg-green-900' :
-                                'bg-gray-800'
-                              }`}
-                            >
-                              <span>{getZoneIcon(zone)}</span>
-                              <span className="truncate">
-                                {isLocked ? '🔒' : isCompleted ? '✓' : `${currentStep}/${totalSteps}`}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                            return (
+                              <div
+                                key={zone}
+                                className={`p-2 rounded border ${
+                                  data.completed
+                                    ? 'bg-green-900 border-green-700'
+                                  : isAbandoned
+                                    ? 'bg-red-900 border-red-700'
+                                  : occupiedBy
+                                    ? 'bg-orange-900 border-orange-700'
+                                    : 'bg-gray-800 border-gray-700'
+                                }`}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm font-semibold capitalize">
+                                    {getZoneIcon(zone)} {zone.replace('_', ' ')}
+                                  </span>
+                                  <span className="text-xs">
+                                    {data.completed
+                                      ? '✓ Terminée'
+                                      : isAbandoned
+                                        ? '❌ Abandonnée'
+                                        : occupiedBy
+                                          ? `🚫 ${occupiedBy === teamId ? 'Vous' : gameState.teams[occupiedBy]?.nom || 'Inconnu'}`
+                                          : `${data.currentStepIndex}/${data.steps.length}`}
+                                  </span>
+                                </div>
+                                {!data.completed && !isAbandoned && (
+                                  <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
+                                    <div
+                                      className="bg-purple-500 h-1 rounded-full"
+                                      style={{ width: `${(data.currentStepIndex / data.steps.length) * 100}%` }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                   
