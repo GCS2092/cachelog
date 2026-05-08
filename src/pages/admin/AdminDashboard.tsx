@@ -429,6 +429,8 @@ export default function AdminDashboard() {
                     <div className="mb-2 sm:mb-3 p-2 bg-gray-700 rounded text-xs sm:text-sm">
                       <p className="text-gray-400 mb-1">Indice:</p>
                       <p>{currentStep.indice}</p>
+                      <p className="text-gray-400 mb-1 mt-2">Code:</p>
+                      <p className="font-bold text-purple-400 text-lg">{currentStep.code}</p>
                     </div>
                   )}
 
