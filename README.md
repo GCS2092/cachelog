@@ -34,9 +34,23 @@ VITE_PARTYKIT_HOST=localhost:1999
 
 ### Lancer PartyKit (backend)
 
+**Option 1 : Déploiement PartyKit (local)**
 ```bash
 npx partykit dev
 ```
+
+**Option 2 : Déploiement PartyKit (production)**
+```bash
+npm install -g partykit
+npx partykit login
+npx partykit deploy
+```
+Cela générera une URL comme : `https://cachelog-xxx.parties.partykit.dev`
+
+**Option 3 : Intégration Vercel + PartyKit**
+- Importez le projet sur Vercel
+- Vercel déploiera automatiquement PartyKit
+- L'URL sera générée et configurée automatiquement
 
 ### Lancer le frontend
 
