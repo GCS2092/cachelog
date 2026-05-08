@@ -279,7 +279,7 @@ export default function TeamView() {
               </div>
 
               {/* Carte des zones */}
-              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {['salon', 'cuisine', 'chambre_garcon', 'chambre_fille', 'douche', 'etage2', 'etage3', 'terrasse'].map(zone => {
                   const status = getZoneStatus(zone);
                   const zoneData = teamZones?.[zone];
@@ -287,40 +287,82 @@ export default function TeamView() {
                   const totalZoneSteps = zoneData?.steps.length || 0;
 
                   return (
-                    <div key={zone} className="flex flex-col items-center">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg">{getZoneIcon(zone)}</span>
-                        <span className="text-xs sm:text-sm font-semibold capitalize">{zone}</span>
+                    <div
+                      key={zone}
+                      onClick={() => status === 'available' && handleZoneSelect(zone)}
+                      className={`relative p-4 sm:p-5 rounded-2xl border-2 transition-all transform hover:scale-105 cursor-pointer ${
+                        status === 'locked'
+                          ? 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
+                        : status === 'occupied'
+                          ? 'bg-orange-900 border-orange-700 opacity-70 cursor-not-allowed'
+                        : status === 'abandoned'
+                          ? 'bg-red-900 border-red-700 opacity-50 cursor-not-allowed'
+                        : status === 'completed'
+                          ? 'bg-green-900 border-green-700 shadow-lg shadow-green-900/50'
+                        : status === 'selected'
+                          ? 'bg-purple-600 border-purple-400 shadow-lg shadow-purple-900/50 scale-105'
+                        : status === 'available'
+                          ? 'bg-gradient-to-br from-gray-800 to-gray-900 border-gray-600 hover:border-purple-400 shadow-lg'
+                        : 'bg-gray-900 border-gray-800 cursor-not-allowed'
+                      }`}
+                    >
+                      {/* Icône de la zone */}
+                      <div className="text-4xl sm:text-5xl mb-2 text-center transform hover:scale-110 transition-transform">
+                        {getZoneIcon(zone)}
                       </div>
-                      <div className="flex gap-1">
-                        <Button
-                          onClick={() => handleZoneSelect(zone)}
-                          disabled={status === 'locked' || status === 'empty' || status === 'completed' || status === 'occupied' || status === 'abandoned'}
-                          variant={status === 'selected' ? 'primary' : 'secondary'}
-                          size="sm"
-                          className="text-xs px-2 py-1"
-                        >
-                          {status === 'selected' ? 'En cours' : status === 'occupied' ? 'Occupée' : status === 'abandoned' ? 'Abandonnée' : 'Sélectionner'}
-                        </Button>
+                      
+                      {/* Nom de la zone */}
+                      <div className="text-sm sm:text-base font-semibold capitalize text-center mb-2">
+                        {zone.replace('_', ' ')}
                       </div>
-                      {status === 'occupied' && (
-                        <div className="text-xs text-orange-400 mt-1">🚫 Occupée par une autre équipe</div>
-                      )}
-                      {status === 'abandoned' && (
-                        <div className="text-xs text-red-400 mt-1">❌ Vous avez abandonné</div>
-                      )}
-                      {status === 'locked' && (
-                        <div className="text-xs text-red-400 mt-1">🔒 Bloquée</div>
-                      )}
-                      {status === 'completed' && (
-                        <div className="text-xs text-green-400 mt-1">✓ Terminée</div>
-                      )}
-                      {status === 'available' && (
-                        <div className="text-xs text-purple-300 mt-1">{currentStepIndex}/{totalZoneSteps}</div>
-                      )}
-                      {status === 'selected' && (
-                        <div className="text-xs text-white mt-1">En cours</div>
-                      )}
+
+                      {/* Indicateurs d'état */}
+                      <div className="space-y-1">
+                        {status === 'locked' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-red-400">
+                            🔒 Bloquée
+                          </div>
+                        )}
+                        {status === 'occupied' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-orange-400">
+                            🚫 Occupée
+                          </div>
+                        )}
+                        {status === 'abandoned' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-red-400">
+                            ❌ Abandonnée
+                          </div>
+                        )}
+                        {status === 'completed' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-green-400">
+                            ✓ Terminée
+                          </div>
+                        )}
+                        {status === 'selected' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-white">
+                            🎯 En cours
+                          </div>
+                        )}
+                        {status === 'available' && (
+                          <div className="flex items-center justify-center gap-1 text-xs text-purple-300">
+                            📍 {currentStepIndex}/{totalZoneSteps}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Barre de progression */}
+                      {status === 'available' || status === 'selected' ? (
+                        <div className="mt-2 w-full bg-gray-700 rounded-full h-1.5">
+                          <div
+                            className="bg-purple-500 h-1.5 rounded-full transition-all"
+                            style={{ width: `${(currentStepIndex / totalZoneSteps) * 100}%` }}
+                          />
+                        </div>
+                      ) : status === 'completed' ? (
+                        <div className="mt-2 w-full bg-green-700 rounded-full h-1.5">
+                          <div className="bg-green-500 h-1.5 rounded-full w-full" />
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
