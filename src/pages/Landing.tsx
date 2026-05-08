@@ -92,12 +92,12 @@ export default function Landing() {
               </Button>
             </form>
 
-            <div className="text-center">
+            <div className="text-center mt-6">
               <button
                 onClick={() => navigate('/admin')}
-                className="text-gray-600 text-xs hover:text-gray-500 transition-colors"
+                className="text-gray-500 hover:text-purple-400 text-sm transition-colors underline"
               >
-                Admin
+                Accès Admin
               </button>
             </div>
           </div>
