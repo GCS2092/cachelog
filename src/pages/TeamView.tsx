@@ -165,8 +165,8 @@ export default function TeamView() {
     const zoneState = zoneStates?.[zone];
     
     if (zoneState?.locked) return 'locked';
-    if (zoneState?.lockedByTeam && zoneState.lockedByTeam !== teamId) return 'occupied';
-    if (zoneState?.abandonedByTeams?.includes(teamId)) return 'abandoned';
+    if (zoneState?.lockedByTeam && zoneState.lockedByTeam !== (teamId || '')) return 'occupied';
+    if (zoneState?.abandonedByTeams?.includes(teamId || '')) return 'abandoned';
     if (zoneData?.completed) return 'completed';
     if (selectedZone === zone) return 'selected';
     if (zoneData && zoneData.steps.length > 0) return 'available';
