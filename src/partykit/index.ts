@@ -158,8 +158,16 @@ export default {
         
         switch (msg.action) {
           case "lock_zone":
-            zoneState.locked = true;
-            zoneState.lockedUntil = msg.duration ? Date.now() + msg.duration * 1000 : undefined;
+            // Vérifier si une équipe occupe déjà cette zone
+            if (zoneState.lockedByTeam) {
+              // Ne pas verrouiller si une équipe est dedans
+              // L'admin peut forcer mais on garde la trace
+              zoneState.locked = true;
+              zoneState.lockedUntil = msg.duration ? Date.now() + msg.duration * 1000 : undefined;
+            } else {
+              zoneState.locked = true;
+              zoneState.lockedUntil = msg.duration ? Date.now() + msg.duration * 1000 : undefined;
+            }
             break;
           case "unlock_zone":
             zoneState.locked = false;
@@ -173,7 +181,6 @@ export default {
             break;
         }
 
-        currentState.zoneStates[msg.zone] = zoneState;
         await room.storage.put("gameState", currentState);
         room.broadcast(JSON.stringify({ type: "STATE_UPDATE", gameState: currentState }));
         break;
